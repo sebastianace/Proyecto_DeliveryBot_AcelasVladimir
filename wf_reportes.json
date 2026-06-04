@@ -1,0 +1,280 @@
+{
+  "name": "wf_reportes",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "55 23 * * *"
+            }
+          ]
+        }
+      },
+      "id": "d9a65d79-2c05-4f21-bb36-94d393bc4526",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 924407144,
+          "mode": "list",
+          "cachedResultName": "PEDIDOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs/edit#gid=924407144"
+        },
+        "options": {}
+      },
+      "id": "2667cd5b-40b4-4303-b099-c741b5733b0d",
+      "name": "Leer PEDIDOS",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        384,
+        560
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "80TKSvDvZ6ZhUZ0B",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// === GENERAR REPORTE DIARIO ===\n// Filtra pedidos de HOY, calcula metricas y construye el mensaje.\n// Optimizacion: hace todo en memoria con un solo recorrido O(n).\n\nconst hoy = new Date().toLocaleDateString('en-CA', {timeZone:'America/Bogota'}); // YYYY-MM-DD\nconst filas = $input.all().map(i => i.json).filter(r => r.id_pedido);\n\n// filtrar solo los de hoy y excluir Cancelados para el ingreso\nconst hoyRows = filas.filter(r => String(r.fecha || '').trim() === hoy);\nconst activos = hoyRows.filter(r => r.estado !== 'Cancelado');\n\nconst total_pedidos = hoyRows.length;\nconst cancelados    = hoyRows.filter(r => r.estado === 'Cancelado').length;\nconst ingresos      = activos.reduce((s, r) => s + Number(r.total_pago || 0), 0);\nconst ticket_prom   = activos.length ? ingresos / activos.length : 0;\n\n// estados\nconst estados = {};\nfor (const r of hoyRows) estados[r.estado] = (estados[r.estado]||0)+1;\nconst estadoStr = Object.entries(estados).map(([k,v])=>`${k}: ${v}`).join(' | ');\n\n// top productos (parsear detalles_pedido JSON)\nconst conteo = {};\nfor (const r of activos) {\n  let items = [];\n  try { items = JSON.parse(r.detalles_pedido || '[]'); } catch(e) {}\n  for (const it of items) {\n    conteo[it.nombre] = (conteo[it.nombre]||0) + Number(it.cantidad||0);\n  }\n}\nconst top3 = Object.entries(conteo).sort((a,b)=>b[1]-a[1]).slice(0,3)\n  .map(([n,c],i)=>`${['🥇','🥈','🥉'][i]} ${n} (${c} uds)`).join('\\n');\n\nconst ts = new Date().toLocaleString('es-CO',{timeZone:'America/Bogota'});\n\nconst mensaje = `📊 <b>REPORTE DIARIO — DeliveryBot</b>\\n📅 ${hoy}  🕐 ${ts}\\n\\n` +\n  `📦 Pedidos hoy: <b>${total_pedidos}</b> (${cancelados} cancelados)\\n` +\n  `💵 Ingresos: <b>$${ingresos.toFixed(2)}</b>\\n` +\n  `🎯 Ticket promedio: $${ticket_prom.toFixed(2)}\\n` +\n  `📋 Estados: ${estadoStr || 'Sin pedidos'}\\n\\n` +\n  `🏆 <b>Top productos</b>\\n${top3 || '—'}`;\n\nreturn [{json:{\n  fecha: hoy, total_pedidos, cancelados, ingresos: ingresos.toFixed(2),\n  ticket_promedio: ticket_prom.toFixed(2), top_productos: top3.replace(/<[^>]+>/g,''),\n  estados: estadoStr, mensaje, generado_en: ts\n}}];\n"
+      },
+      "id": "3d188349-1028-4526-823a-e9d502ec7cd5",
+      "name": "Calcular Métricas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1374722051,
+          "mode": "list",
+          "cachedResultName": "REPORTES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs/edit#gid=1374722051"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fecha": "={{ $json.fecha }}",
+            "ticket_promedio": "={{ $json.ticket_promedio }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fecha",
+              "displayName": "fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_vendido",
+              "displayName": "total_vendido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "num_pedidos",
+              "displayName": "num_pedidos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "producto_estrella",
+              "displayName": "producto_estrella",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hora_pico",
+              "displayName": "hora_pico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ticket_promedio",
+              "displayName": "ticket_promedio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "21685cd6-5cac-40ae-abc4-e2ae3fd9ad72",
+      "name": "Guardar en REPORTES",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        848,
+        560
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "80TKSvDvZ6ZhUZ0B",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.mensaje }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "acc96782-db7a-4c75-9b59-4fc44518e9b1",
+      "name": "Enviar Reporte Admin",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        560
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "2e09eeeb-b526-4e93-ba83-88091fa4c754",
+      "credentials": {
+        "telegramApi": {
+          "id": "vxUP2zlxfHMW31Bp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 📊 WF_Reportes\n\nEjecución automática a las **11:55 PM** cada día.\n\n**Flujo:**\n1. Lee TODA la hoja PEDIDOS (optimización: en memoria, un solo recorrido O(n)).\n2. Filtra pedidos del día actual (zona horaria Colombia).\n3. Calcula: total de pedidos, ingresos, ticket promedio, top 3 productos.\n4. Guarda el resumen en la hoja REPORTES.\n5. Envía el reporte al admin por Telegram.\n\n**Modularidad:** este workflow vive separado del bot conversacional. WF_Principal no depende de él → desacoplamiento real.",
+        "height": 340,
+        "width": 400,
+        "color": 5
+      },
+      "id": "e68a0278-2ba8-45bd-b175-0a8801eb1c52",
+      "name": "Nota: Reportes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        176
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Leer PEDIDOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer PEDIDOS": {
+      "main": [
+        [
+          {
+            "node": "Calcular Métricas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Métricas": {
+      "main": [
+        [
+          {
+            "node": "Guardar en REPORTES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en REPORTES": {
+      "main": [
+        [
+          {
+            "node": "Enviar Reporte Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "12edb81d-cbb0-4169-9abd-2cab111f85eb",
+  "meta": {
+    "instanceId": "f2cbc7b311faf67c172186fc0dcc09c78e86a43804e99dfa56f6fd04c01041eb"
+  },
+  "nodeGroups": [],
+  "id": "oyuY9O3zjeDxhFGO",
+  "tags": []
+}

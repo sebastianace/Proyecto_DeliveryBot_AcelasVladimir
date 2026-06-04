@@ -1,0 +1,110 @@
+{
+  "name": "wf_ManejoErrores",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🛡 WF_ManejoErrores\n\nEste workflow es el **Error Workflow global** de DeliveryBot.\n\nCómo activarlo:\n1. Importa este JSON en n8n.\n2. Abre **WF_Principal_DeliveryBot** → ⚙️ Settings → **Error Workflow** → selecciona `WF_ManejoErrores`.\n3. Publica ambos.\n\n**¿Por qué importa?** Cualquier excepción no capturada en el flujo principal (falla de red, Sheets caído, token inválido) dispara este trigger automáticamente y avisa al admin en Telegram antes de que el cliente se queje.",
+        "height": 360,
+        "width": 380,
+        "color": 2
+      },
+      "id": "02771282-0f9f-4773-b65d-3bc365374441",
+      "name": "Nota: ManejoErrores",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.texto }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "763d0b9f-f730-45e0-b406-f8fd91c854cd",
+      "name": "Notificar Admin",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        352
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "e15744ad-fb6d-41c5-aa72-976149858859",
+      "credentials": {
+        "telegramApi": {
+          "id": "vxUP2zlxfHMW31Bp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// === FORMATEAR ERROR PARA ADMINISTRADOR ===\n// Recibe el contexto del error de n8n y arma un mensaje claro.\nconst e = $input.first().json;\nconst exec    = e.execution  || {};\nconst wf      = e.workflow   || {};\nconst errData = exec.error   || {};\n\nconst ts    = new Date().toLocaleString('es-CO', {timeZone:'America/Bogota'});\nconst nodo  = errData.node?.name  || exec.lastNodeExecuted || 'desconocido';\nconst msg   = errData.message     || 'Sin detalle';\nconst wfName= wf.name             || 'WF_Principal_DeliveryBot';\nconst execId= exec.id             || '?';\n\nconst texto = `⚠️ <b>ERROR EN DELIVERYBOT</b>\\n\\n` +\n  `📋 Workflow: <b>${wfName}</b>\\n` +\n  `🔴 Nodo: <code>${nodo}</code>\\n` +\n  `💬 Error: ${msg}\\n` +\n  `🕐 Hora: ${ts}\\n` +\n  `🆔 Ejecución: <code>${execId}</code>\\n\\n` +\n  `Revisa Executions en n8n para ver el detalle completo.`;\n\nreturn [{ json: { texto, wfName, nodo, execId } }];\n"
+      },
+      "id": "3f826ce1-d904-416d-a205-d010db98fccc",
+      "name": "Formatear Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        352
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e151c6d2-7904-473e-bc60-a38c2df1cc24",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        352
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Formatear Error": {
+      "main": [
+        [
+          {
+            "node": "Notificar Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Formatear Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8ca33ca5-05f7-4954-bcc4-4dcd36f69712",
+  "meta": {
+    "instanceId": "f2cbc7b311faf67c172186fc0dcc09c78e86a43804e99dfa56f6fd04c01041eb"
+  },
+  "nodeGroups": [],
+  "id": "Tq1BmmQTCU9CMrhJ",
+  "tags": []
+}
