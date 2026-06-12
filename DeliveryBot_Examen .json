@@ -1,5 +1,5 @@
 {
-  "name": "WF_Principal_DeliveryBot",
+  "name": "WF_Principal_DeliveryBot copy",
   "nodes": [
     {
       "parameters": {
@@ -9,33 +9,33 @@
         ],
         "additionalFields": {}
       },
-      "id": "9ec944f5-a4aa-429f-be62-28c6778b7783",
+      "id": "316ea95e-7101-4cd7-a85f-4766abda46de",
       "name": "Telegram Trigger",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
       "position": [
-        -784,
-        624
+        -688,
+        976
       ],
       "webhookId": "047d5d9d-8bdb-4edc-8662-c9b278da94c7",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "\n// === NORMALIZADOR DE ENTRADA ===\n// Convierte cualquier evento de Telegram (texto o clic de boton)\n// en un objeto unico y limpio que el resto del flujo entiende.\nconst u = $input.first().json;\nlet chatId='', userId='', firstName='', raw='', isCallback=false, callbackId='', messageId='';\n\nif (u.callback_query) {                       // el usuario toco un boton inline\n  isCallback = true;\n  chatId    = u.callback_query.message.chat.id;\n  userId    = u.callback_query.from.id;\n  firstName = u.callback_query.from.first_name || '';\n  raw       = (u.callback_query.data || '').trim();\n  callbackId= u.callback_query.id;\n  messageId = u.callback_query.message.message_id;\n} else if (u.message) {                        // el usuario escribio texto\n  chatId    = u.message.chat.id;\n  userId    = u.message.from.id;\n  firstName = u.message.from.first_name || '';\n  raw       = (u.message.text || '').trim();\n  messageId = u.message.message_id;\n}\n\n// Mapeo de comandos de texto a acciones internas\nconst cmdMap = {'/start':'HOME','/menu':'MENU','/carrito':'CART',\n                '/pedidos':'MYORDERS','/estado':'STATUS','/ayuda':'UNKNOWN'};\nconst actions = ['HOME','MENU','CART','CLEAR','CONFIRM','MYORDERS','STATUS'];\n\nlet action='UNKNOWN', arg1='', arg2='';\nconst low = raw.toLowerCase();\n\nif (cmdMap[low]) {\n  action = cmdMap[low];\n} else if (raw.includes(':')) {                // botones tipo  CAT:Bebidas  /  ADD:B01:2\n  const p = raw.split(':');\n  action = p[0].toUpperCase(); arg1 = p[1] || ''; arg2 = p[2] || '';\n} else if (actions.includes(raw.toUpperCase())) {\n  action = raw.toUpperCase();\n} else if (/^[A-Za-z]\\d{1,3}(\\s+\\d{1,3})?$/.test(raw)) {  // texto tipo  \"B01 2\"\n  action = 'ADDITEM';\n  const parts = raw.split(/\\s+/);\n  arg1 = parts[0].toUpperCase();\n  arg2 = parts[1] ? String(parseInt(parts[1], 10)) : '1';\n}\n\nreturn [{ json: { chatId, userId: String(userId), firstName, raw,\n                  action, arg1, arg2, isCallback, callbackId, messageId } }];\n"
+        "jsCode": "\n// === NORMALIZADOR DE ENTRADA ===\n// Convierte cualquier evento de Telegram (texto o clic de boton)\n// en un objeto unico y limpio que el resto del flujo entiende.\nconst u = $input.first().json;\nlet chatId='', userId='', firstName='', raw='', isCallback=false, callbackId='', messageId='';\n\nif (u.callback_query) {                       // el usuario toco un boton inline\n  isCallback = true;\n  chatId    = u.callback_query.message.chat.id;\n  userId    = u.callback_query.from.id;\n  firstName = u.callback_query.from.first_name || '';\n  raw       = (u.callback_query.data || '').trim();\n  callbackId= u.callback_query.id;\n  messageId = u.callback_query.message.message_id;\n} else if (u.message) {                        // el usuario escribio texto\n  chatId    = u.message.chat.id;\n  userId    = u.message.from.id;\n  firstName = u.message.from.first_name || '';\n  raw       = (u.message.text || '').trim();\n  messageId = u.message.message_id;\n}\n\n// Mapeo de comandos de texto a acciones internas\nconst cmdMap = {'/start':'HOME','/menu':'MENU','/carrito':'CART',\n                '/pedidos':'MYORDERS','/estado':'STATUS','/admin':'ADMIN','/pendientes':'ADMIN','/ayuda':'UNKNOWN'};\nconst actions = ['HOME','MENU','CART','CLEAR','CONFIRM','MYORDERS','STATUS'];\n\nlet action='UNKNOWN', arg1='', arg2='';\nconst low = raw.toLowerCase();\n\nif (cmdMap[low]) {\n  action = cmdMap[low];\n} else if (raw.includes(':')) {                // botones tipo  CAT:Bebidas  /  ADD:B01:2\n  const p = raw.split(':');\n  action = p[0].toUpperCase(); arg1 = p[1] || ''; arg2 = p[2] || '';\n} else if (actions.includes(raw.toUpperCase())) {\n  action = raw.toUpperCase();\n} else if (/^[A-Za-z]\\d{1,3}(\\s+\\d{1,3})?$/.test(raw)) {  // texto tipo  \"B01 2\"\n  action = 'ADDITEM';\n  const parts = raw.split(/\\s+/);\n  arg1 = parts[0].toUpperCase();\n  arg2 = parts[1] ? String(parseInt(parts[1], 10)) : '1';\n}\n\nreturn [{ json: { chatId, userId: String(userId), firstName, raw,\n                  action, arg1, arg2, isCallback, callbackId, messageId } }];\n"
       },
-      "id": "1bc17a6e-f9f8-4a72-ac21-6162dae9c4fc",
+      "id": "71291819-0b34-479f-bb89-02c6a1919da6",
       "name": "Normalizar Entrada",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -544,
-        624
+        -464,
+        976
       ]
     },
     {
@@ -305,18 +305,42 @@
               },
               "renameOutput": true,
               "outputKey": "UNKNOWN"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e2118e97a26d44b99e",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "ADMIN",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ADMIN"
             }
           ]
         },
         "options": {}
       },
-      "id": "e5a544d8-483a-4f31-bac8-bda9a3484b4c",
+      "id": "8a85f76b-2624-4a0d-a571-a722d21c7db5",
       "name": "Router",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -304,
-        624
+        -240,
+        816
       ]
     },
     {
@@ -369,13 +393,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "f32eeb53-326c-4088-85ac-ffddb1206597",
+      "id": "f6be82f5-af6e-4f57-8bf2-26b27f282335",
       "name": "Menú Principal",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        0
+        -16,
+        -80
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -383,8 +407,8 @@
       "webhookId": "59355b9d-2b0d-4267-af45-207a0b499487",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -450,13 +474,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "85c8496f-4241-4e8e-b8c3-c86667b3b384",
+      "id": "5737fe0c-ef58-421c-840c-32d9be7247e3",
       "name": "Mostrar Categorías",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        240
+        -16,
+        112
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -464,8 +488,8 @@
       "webhookId": "2d896ec5-2fd5-40c2-9477-2edbebdefa23",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -493,13 +517,13 @@
         },
         "options": {}
       },
-      "id": "3b9989cf-8394-4dce-86f8-60a2571baa3a",
+      "id": "094399df-2d52-403b-a8a1-694963c2daea",
       "name": "Leer MENU (categoría)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        480
+        -16,
+        304
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -515,26 +539,26 @@
       "parameters": {
         "jsCode": "\n// === CONSTRUIR LISTA DE PRODUCTOS ===\n// Optimizacion: la lectura ya viene FILTRADA por categoria desde Sheets,\n// asi no traemos toda la base. Aqui solo damos formato.\nconst cat   = $('Normalizar Entrada').first().json.arg1;\nconst rows  = $input.all().map(i => i.json);\nconst icon  = { 'Bebidas':'☕','Comidas':'🍔','Snacks':'🍪' }[cat] || '🍽';\nlet text = `${icon} <b>${String(cat).toUpperCase()}</b>\\n\\n`;\nconst buttons = [];\n\nif (rows.length === 0) {\n  text += 'No hay productos en esta categoría por ahora.';\n} else {\n  for (const p of rows) {\n    const agotado = Number(p.stock) <= 0;\n    text += `<b>${p.id_producto}</b> · ${p.nombre}\\n` +\n            `   💲${Number(p.precio).toFixed(2)}` +\n            (agotado ? '  —  <i>AGOTADO ❌</i>' : `  —  stock: ${p.stock}`) + '\\n\\n';\n    if (!agotado) buttons.push({ id: p.id_producto, nombre: p.nombre });\n  }\n  text += '➕ Para pedir, toca un producto o escribe su código y cantidad (ej: <code>B01 2</code>).';\n}\nreturn [{ json: { text, buttons, chatId: $('Normalizar Entrada').first().json.chatId } }];\n"
       },
-      "id": "fdcea4cf-8290-4399-9e6e-726497e1a99d",
+      "id": "e4e1c7c4-26ce-4333-9f60-b68ad11ca0e2",
       "name": "Construir Lista",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        480
+        208,
+        304
       ]
     },
     {
       "parameters": {
         "jsCode": "\n// Convierte la lista de productos disponibles en filas de botones (de a 2).\nconst d = $input.first().json;\nconst rows = [];\nfor (let i = 0; i < d.buttons.length; i += 2) {\n  const slice = d.buttons.slice(i, i + 2);\n  rows.push({ row: { buttons: slice.map(b => ({ text: `➕ ${b.id}`, additionalFields: { callback_data: `ADD:${b.id}:1` } })) } });\n}\nrows.push({ row: { buttons: [\n  { text: '🛒 Carrito', additionalFields: { callback_data: 'CART' } },\n  { text: '🍽 Menú',    additionalFields: { callback_data: 'MENU' } },\n]}});\nreturn [{ json: { text: d.text, rows, chatId: d.chatId } }];\n"
       },
-      "id": "a953835c-7cd2-4b13-858b-10858d263e09",
+      "id": "17565bd4-ee4f-4a7e-aad4-0d475485a959",
       "name": "Teclado Lista",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        448,
-        480
+        432,
+        304
       ]
     },
     {
@@ -568,13 +592,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "b639860f-db79-41d9-aeb7-9bf2405a78b4",
+      "id": "b283d4a0-912a-48e3-a3ed-d0aefbf3e675",
       "name": "Enviar Lista",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        672,
-        480
+        656,
+        304
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -582,8 +606,8 @@
       "webhookId": "d184d4a1-9833-4f1a-a553-c466b95a63bc",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -611,13 +635,13 @@
         },
         "options": {}
       },
-      "id": "b7f8d923-20c7-456a-8b50-e2c52f205273",
+      "id": "e30ac7b2-0d92-4ec8-9fe2-f3adcd67176c",
       "name": "Leer MENU (item)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        752
+        -16,
+        496
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -653,13 +677,13 @@
         },
         "options": {}
       },
-      "id": "166c918d-b5ee-456b-9b5d-02916cb13635",
+      "id": "98b96678-ea61-477b-b275-190487029034",
       "name": "Leer Sesión (add)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        944
+        208,
+        496
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -676,13 +700,13 @@
       "parameters": {
         "jsCode": "\n// === AGREGAR AL CARRITO ===\nconst norm = $('Normalizar Entrada').first().json;\nconst prodRows = $('Leer MENU (item)').all().map(i => i.json);\nconst prod = prodRows.find(p => String(p.id_producto).toUpperCase() === String(norm.arg1).toUpperCase());\n\n// carrito actual desde la sesion (o vacio)\nlet cart = [];\nconst sess = $('Leer Sesión (add)').all().map(i => i.json);\nif (sess.length && sess[0].carrito_temporal) {\n  try { cart = JSON.parse(sess[0].carrito_temporal); } catch (e) { cart = []; }\n}\nif (!Array.isArray(cart)) cart = [];\n\nconst qty = Math.max(1, parseInt(norm.arg2 || '1', 10));\n\n// VALIDACIONES (branching real)\nif (!prod) {\n  return [{ json: { ok:false, reason:`❓ No encontré el producto <b>${norm.arg1}</b>. Revisa el código en /menu.`, chatId: norm.chatId } }];\n}\nconst enCarrito = cart.find(c => c.id === prod.id_producto)?.cantidad || 0;\nif (Number(prod.stock) < (enCarrito + qty)) {\n  return [{ json: { ok:false, reason:`⚠️ No hay stock suficiente de <b>${prod.nombre}</b> (disponible: ${prod.stock}).`, chatId: norm.chatId } }];\n}\n\n// agregar / sumar\nconst found = cart.find(c => c.id === prod.id_producto);\nif (found) { found.cantidad += qty; }\nelse { cart.push({ id: prod.id_producto, nombre: prod.nombre, precio: Number(prod.precio), cantidad: qty }); }\n\nconst total = cart.reduce((s,c) => s + c.precio * c.cantidad, 0);\nconst msg = `✅ Agregué <b>${qty}x ${prod.nombre}</b> a tu carrito.\\n` +\n            `🛒 Items: ${cart.reduce((s,c)=>s+c.cantidad,0)} · Total parcial: 💲${total.toFixed(2)}`;\n\nreturn [{ json: {\n  ok:true, chatId: norm.chatId, userId: norm.userId,\n  carrito: JSON.stringify(cart), msg,\n  ultimo_cambio: new Date().toISOString().slice(0,19).replace('T',' ')\n}}];\n"
       },
-      "id": "f96a68d0-5ca8-4d24-b83a-77eff2356a3a",
+      "id": "57d06a06-76b9-4464-9a34-a9dd7e748839",
       "name": "Agregar al Carrito",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        848
+        432,
+        496
       ]
     },
     {
@@ -710,13 +734,13 @@
         },
         "options": {}
       },
-      "id": "20459d83-c7db-4735-9513-7846df3760d8",
+      "id": "606ea01c-add5-4cc0-a37f-4fd657e07e01",
       "name": "¿Stock OK?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        448,
-        848
+        656,
+        496
       ]
     },
     {
@@ -839,13 +863,13 @@
         },
         "options": {}
       },
-      "id": "7607ef5a-9247-4efe-829e-b862c9b39010",
+      "id": "b917c388-bf3a-48c9-8a78-58128d536106",
       "name": "Guardar Sesión (add)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        688,
-        816
+        880,
+        400
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -901,13 +925,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "e76e8db7-1b81-4b9a-8ed0-f2505968d2e5",
+      "id": "f3788a40-bf41-4a7c-b9db-a92d48f7d487",
       "name": "Confirmar Item",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        880,
-        768
+        1104,
+        400
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -915,8 +939,8 @@
       "webhookId": "cc1f4664-a75a-4e5c-9079-af8252eaad00",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -952,13 +976,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "795889fb-8cff-483d-aee7-88b94b6258ab",
+      "id": "d6105763-fe20-4f48-b54c-12c0147f3448",
       "name": "Aviso Sin Stock",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        672,
-        960
+        880,
+        592
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -966,8 +990,8 @@
       "webhookId": "d42f868b-9d98-44ae-81cb-79e2bf77255f",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -994,13 +1018,13 @@
         },
         "options": {}
       },
-      "id": "2e9da835-012b-4c9e-89c8-cec3e7d35e99",
+      "id": "5241bcd5-c681-45ab-9e59-403a6d0b3281",
       "name": "Leer Sesión (cart)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        1168
+        -16,
+        688
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1017,13 +1041,13 @@
       "parameters": {
         "jsCode": "\n// === CONSTRUIR VISTA DEL CARRITO ===\nconst norm = $('Normalizar Entrada').first().json;\nlet cart = [];\nconst sess = $('Leer Sesión (cart)').all().map(i => i.json);\nif (sess.length && sess[0].carrito_temporal) {\n  try { cart = JSON.parse(sess[0].carrito_temporal); } catch (e) { cart = []; }\n}\nif (!Array.isArray(cart)) cart = [];\n\nif (cart.length === 0) {\n  return [{ json: { vacio:true, text:'🛒 Tu carrito está vacío.\\nEscribe /menu para empezar a pedir.', chatId: norm.chatId } }];\n}\nconst lineas = cart.map(c => `• ${c.cantidad}x ${c.nombre} — 💲${(c.precio*c.cantidad).toFixed(2)}`).join('\\n');\nconst total  = cart.reduce((s,c) => s + c.precio*c.cantidad, 0);\nconst text   = `🛒 <b>Tu carrito</b>\\n\\n${lineas}\\n\\n💵 <b>Total: 💲${total.toFixed(2)}</b>`;\nreturn [{ json: { vacio:false, text, chatId: norm.chatId } }];\n"
       },
-      "id": "49109a82-5876-4b6c-96db-7e0f6aea1e83",
+      "id": "5ed8487f-0e69-4086-97b0-29e2411b5d20",
       "name": "Construir Carrito",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1168
+        208,
+        688
       ]
     },
     {
@@ -1423,13 +1447,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "5d48b9e1-6c31-4124-ad54-d14df0f52c49",
+      "id": "277df01e-f5e0-4215-95ee-7382ce802248",
       "name": "Enviar Carrito",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        448,
-        1168
+        432,
+        688
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1437,8 +1461,8 @@
       "webhookId": "d6372bd4-cb35-4602-8f4d-f615d7dbc605",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -1510,13 +1534,13 @@
         },
         "options": {}
       },
-      "id": "afc8751f-c503-4960-8d42-693459d7502d",
+      "id": "d091fca2-1565-4c34-b431-7c553679a6cf",
       "name": "Vaciar Carrito",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        1360
+        -16,
+        880
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1560,13 +1584,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "e0bed5b1-3f45-4442-b7e0-0416f16069c4",
+      "id": "c3e9c093-ab74-4f63-85eb-ecbccc44c9ac",
       "name": "Carrito Vaciado",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        224,
-        1360
+        208,
+        880
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1574,8 +1598,8 @@
       "webhookId": "f96411f8-c30d-4502-a2ee-839342a30f28",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -1603,13 +1627,13 @@
         },
         "options": {}
       },
-      "id": "9720e1bf-f7f3-4719-806d-48baadd763c2",
+      "id": "cc216bf4-f5f6-418d-9e99-9132246cf057",
       "name": "Leer Sesión (confirm)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        1584
+        -16,
+        1072
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1638,13 +1662,13 @@
         },
         "options": {}
       },
-      "id": "20fd0967-8619-477e-90bf-623dec787d33",
+      "id": "51d02fcb-be8d-4ec1-a2aa-34ac7b144d7e",
       "name": "Leer MENU (stock)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        1792
+        208,
+        1072
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1660,13 +1684,13 @@
       "parameters": {
         "jsCode": "\n// === PROCESAR PEDIDO ===\n// Re-valida stock contra MENU (otra persona pudo agotarlo) y arma el pedido.\nconst norm = $('Normalizar Entrada').first().json;\nconst userId = norm.userId;\n\nlet cart = [];\nconst sess = $('Leer Sesión (confirm)').all().map(i => i.json);\nif (sess.length && sess[0].carrito_temporal) {\n  try { cart = JSON.parse(sess[0].carrito_temporal); } catch (e) { cart = []; }\n}\nif (!Array.isArray(cart)) cart = [];\n\nconst menu = $('Leer MENU (stock)').all().map(i => i.json);\n\nif (cart.length === 0) {\n  return [{ json: { ok:false, reason:'🛒 Tu carrito está vacío. Escribe /menu para pedir.', chatId: norm.chatId } }];\n}\n// re-chequeo de stock\nfor (const it of cart) {\n  const prod = menu.find(p => String(p.id_producto) === String(it.id));\n  if (!prod || Number(prod.stock) < it.cantidad) {\n    return [{ json: { ok:false, reason:`⚠️ Ya no hay stock suficiente de <b>${it.nombre}</b>. Ajusta tu carrito (/carrito).`, chatId: norm.chatId } }];\n  }\n}\n\nconst IVA = 0.00; // <-- ajustable (0.19 = 19%)\nconst subtotal = cart.reduce((s,c) => s + c.precio*c.cantidad, 0);\nconst total = subtotal * (1 + IVA);\n\nconst now = new Date();\nconst p2 = n => String(n).padStart(2,'0');\nconst y=now.getFullYear(), m=p2(now.getMonth()+1), d=p2(now.getDate());\nconst hh=p2(now.getHours()), mm=p2(now.getMinutes()), ss=p2(now.getSeconds());\nconst idPedido = `ORD-${y}${m}${d}-${hh}${mm}${ss}`;\n\nconst resumen = cart.map(c => `• ${c.cantidad}x ${c.nombre} — 💲${(c.precio*c.cantidad).toFixed(2)}`).join('\\n');\nconst stockUpdates = cart.map(c => {\n  const prod = menu.find(p => String(p.id_producto) === String(c.id));\n  return { id_producto: c.id, stock: Number(prod.stock) - c.cantidad };\n});\n\nconst userMsg = `✅ <b>¡Pedido confirmado!</b>\\n\\n🧾 Orden: <code>${idPedido}</code>\\n${resumen}\\n\\n` +\n  `💵 Total: <b>💲${total.toFixed(2)}</b>${IVA>0?` (incl. IVA ${(IVA*100).toFixed(0)}%)`:''}\\n` +\n  `📦 Estado: <b>Recibido</b>\\n\\nTe avisaremos cuando cambie de estado. ¡Gracias! 🙌`;\nconst kitchenMsg = `🔔 <b>NUEVO PEDIDO</b>\\n🧾 ${idPedido}\\n👤 ${norm.firstName} (${userId})\\n${resumen}\\n💵 Total: 💲${total.toFixed(2)}\\n⏱ ${hh}:${mm}`;\n\nreturn [{ json: {\n  ok:true, chatId: norm.chatId,\n  id_pedido:idPedido, id_usuario:userId, detalles_pedido:JSON.stringify(cart),\n  total_pago:Number(total.toFixed(2)), estado:'Recibido', fecha:`${y}-${m}-${d}`, hora:`${hh}:${mm}`,\n  stockUpdates, userMsg, kitchenMsg\n}}];\n"
       },
-      "id": "f90503ce-c82b-48db-865e-62fc1db1686a",
+      "id": "3f19ec5e-4985-4fa7-9fc6-e7a6663f8642",
       "name": "Procesar Pedido",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        1680
+        432,
+        1072
       ]
     },
     {
@@ -1675,7 +1699,7 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "loose",
+            "typeValidation": "strict",
             "version": 2
           },
           "conditions": [
@@ -1690,17 +1714,17 @@
               }
             }
           ],
-          "combinator": "and"
+          "combinator": "or"
         },
         "options": {}
       },
-      "id": "6481ccef-b0ff-4cd6-8433-578585198d45",
+      "id": "fececee2-61af-4b56-b7f5-9d6c014e6fc4",
       "name": "¿Pedido OK?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        448,
-        1680
+        656,
+        1072
       ]
     },
     {
@@ -1800,13 +1824,13 @@
         },
         "options": {}
       },
-      "id": "666de0a0-3434-41b5-abb4-5681bce6c257",
+      "id": "c8e8f9cd-52d9-4536-857a-4f7462074400",
       "name": "Guardar Pedido",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        672,
-        1568
+        880,
+        784
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -1822,13 +1846,13 @@
       "parameters": {
         "jsCode": "\n// Expande el array stockUpdates a N items (uno por producto) para\n// actualizar el stock en UN solo nodo de Google Sheets (operacion por lote).\nconst upd = $('Procesar Pedido').first().json.stockUpdates || [];\nreturn upd.map(u => ({ json: { id_producto: u.id_producto, stock: u.stock } }));\n"
       },
-      "id": "e42a68b1-984e-4978-bc0e-bbf895b2f2e8",
+      "id": "43912f89-94f1-4253-8cfb-79a9ddfaaedd",
       "name": "Preparar Stock",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        672,
-        1792
+        880,
+        1072
       ]
     },
     {
@@ -1942,13 +1966,13 @@
         },
         "options": {}
       },
-      "id": "93e74551-29ea-439e-9c01-79374baa6440",
+      "id": "71307edb-9776-4fc8-8262-e2bb76a65a7b",
       "name": "Actualizar Stock",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        880,
-        1792
+        1104,
+        1072
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2029,13 +2053,13 @@
         },
         "options": {}
       },
-      "id": "86ed20b0-2d3e-478a-accd-b1b3ec66ecb7",
+      "id": "863afd94-dc7f-48ad-a52b-aba1112de708",
       "name": "Limpiar Sesión",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        880,
-        1568
+        1104,
+        784
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2079,13 +2103,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "ff2f5c43-3cc9-4ebf-83b6-c8841ca494f9",
+      "id": "424c81dd-c0ff-46ae-8800-5e72f1e093c3",
       "name": "Avisar Cliente",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1104,
-        1568
+        1328,
+        784
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2093,14 +2117,14 @@
       "webhookId": "9d74719e-4a55-48de-8b5d-5ef67ecff40b",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
     {
       "parameters": {
-        "chatId": "PEGA_AQUI_CHAT_ID_COCINA",
+        "chatId": "={{ $json.chatId }}",
         "text": "={{ $('Procesar Pedido').first().json.kitchenMsg }}",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
@@ -2148,13 +2172,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "0e3834cf-21cf-44a5-998b-dcad4b698b47",
+      "id": "72858549-a88a-450b-9e10-1a601cbbe25d",
       "name": "Avisar Cocina",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1328,
-        1568
+        1552,
+        784
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2162,8 +2186,8 @@
       "webhookId": "84ee5568-3168-447d-823f-1ec0e534d09a",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -2199,13 +2223,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "67d3ea6c-cfd5-4e4a-ab1a-4b2edf25533a",
+      "id": "0e1c59ea-4a97-441f-b465-5699e0476a79",
       "name": "Pedido Rechazado",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        672,
-        1984
+        768,
+        1648
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2213,8 +2237,8 @@
       "webhookId": "76135f39-1029-43b0-9883-d88fcc9c6cca",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -2242,13 +2266,13 @@
         },
         "options": {}
       },
-      "id": "eb26895a-5a20-4c27-a73b-71953a9b17f5",
+      "id": "010bc12c-3dd4-4496-a3dc-522bcfea8737",
       "name": "Leer PEDIDOS (usuario)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        2192
+        -16,
+        1264
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2260,19 +2284,6 @@
           "name": "Google Sheets account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "\n// === MIS PEDIDOS === (lectura ya filtrada por id_usuario)\nconst norm = $('Normalizar Entrada').first().json;\nlet rows = $input.all().map(i => i.json).filter(r => r.id_pedido);\nif (rows.length === 0) {\n  return [{ json: { text:'📦 Aún no tienes pedidos. ¡Haz el primero con /menu!', chatId: norm.chatId } }];\n}\nrows = rows.slice(-5).reverse();   // ultimos 5\nconst emoji = { 'Recibido':'🟡','Preparación':'🔵','En camino':'🟠','Entregado':'🟢','Cancelado':'🔴' };\nconst lineas = rows.map(r => `${emoji[r.estado]||'•'} <code>${r.id_pedido}</code> — 💲${Number(r.total_pago).toFixed(2)} — <b>${r.estado}</b> (${r.fecha})`).join('\\n');\nreturn [{ json: { text:`📦 <b>Tus últimos pedidos</b>\\n\\n${lineas}`, chatId: norm.chatId } }];\n"
-      },
-      "id": "5f15bfb8-1461-40b9-b8fd-31818e27e1e2",
-      "name": "Construir Mis Pedidos",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        224,
-        2192
-      ]
     },
     {
       "parameters": {
@@ -2306,13 +2317,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "b402b6be-e25c-4b6a-a8a3-75dee9b4605d",
+      "id": "660dfccb-6afe-40c3-8a76-2a0f63a7ebba",
       "name": "Enviar Mis Pedidos",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        448,
-        2192
+        432,
+        1264
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2320,8 +2331,8 @@
       "webhookId": "c648a61e-d261-4582-9b3b-1b6ec89799dc",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -2348,13 +2359,13 @@
         },
         "options": {}
       },
-      "id": "b46e6f59-5d40-4e55-8f17-f03c24cab565",
+      "id": "c64596db-7620-42c7-b2db-f7980ead8575",
       "name": "Leer PEDIDOS (estado)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        0,
-        2384
+        -16,
+        1456
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2371,13 +2382,13 @@
       "parameters": {
         "jsCode": "\n// === ESTADO DEL ULTIMO PEDIDO ===\nconst norm = $('Normalizar Entrada').first().json;\nconst rows = $input.all().map(i => i.json).filter(r => r.id_pedido);\nif (rows.length === 0) {\n  return [{ json: { text:'🔄 No tienes pedidos activos. Pide algo con /menu.', chatId: norm.chatId } }];\n}\nconst last = rows[rows.length - 1];\nconst pasos = ['Recibido','Preparación','En camino','Entregado'];\nconst idx = pasos.indexOf(last.estado);\nconst barra = pasos.map((p,i) => (i <= idx ? '🟢' : '⚪') + ' ' + p).join('\\n');\nconst text = `🔄 <b>Estado de tu pedido</b>\\n🧾 <code>${last.id_pedido}</code>\\n\\n${barra}\\n\\n💵 Total: 💲${Number(last.total_pago).toFixed(2)}`;\nreturn [{ json: { text, chatId: norm.chatId } }];\n"
       },
-      "id": "f97514b0-200d-42c5-9182-49cb800feb86",
+      "id": "e20f6cea-a455-49b4-91f7-bf4cea6c7a29",
       "name": "Construir Estado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        2384
+        208,
+        1456
       ]
     },
     {
@@ -2412,13 +2423,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "36122640-49a1-4777-8f9a-6f8a81a95e71",
+      "id": "739c168a-0f3c-413b-9bce-13e613dd2924",
       "name": "Enviar Estado",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        448,
-        2384
+        432,
+        1456
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2426,8 +2437,8 @@
       "webhookId": "d47a0644-9721-48a2-a531-705f7fa3c59c",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -2463,13 +2474,13 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "b9dcff44-8a04-436a-99f9-4d500fe5801d",
+      "id": "8317d955-7feb-4204-b075-e756ba25baf6",
       "name": "Ayuda",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        2592
+        -16,
+        1648
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2477,8 +2488,8 @@
       "webhookId": "be0ba6b8-74c0-4384-8aea-9f378039b892",
       "credentials": {
         "telegramApi": {
-          "id": "vxUP2zlxfHMW31Bp",
-          "name": "Telegram account"
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
         }
       }
     },
@@ -2489,13 +2500,13 @@
         "width": 360,
         "color": 5
       },
-      "id": "52f3b0e3-4ab3-4c06-b094-30d662ce722f",
+      "id": "cb175101-b7e1-4162-a41b-7260894808e7",
       "name": "Nota: ## 🚪 ENTRADA Y ENR",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -800,
-        320
+        -752,
+        384
       ]
     },
     {
@@ -2505,13 +2516,13 @@
         "width": 300,
         "color": 4
       },
-      "id": "c4ea09b1-a1e7-4a8e-8fb0-62139eae871b",
+      "id": "4078eff6-4a32-434f-8c8c-db19b1822e5d",
       "name": "Nota: ## 🍽 CATÁLOGO\n\nLee",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        208,
-        208
+        288,
+        48
       ]
     },
     {
@@ -2521,13 +2532,13 @@
         "width": 300,
         "color": 6
       },
-      "id": "af5ae844-139e-4586-8930-5e9eedc5187f",
+      "id": "c5f0db36-0f2d-4c24-a277-d5d5de49e503",
       "name": "Nota: ## ➕ AGREGAR AL CA",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        160,
-        640
+        448,
+        848
       ]
     },
     {
@@ -2537,13 +2548,13 @@
         "width": 360,
         "color": 3
       },
-      "id": "553ee2a2-a8a3-4c5a-95d9-a9b03f4308ee",
+      "id": "0d5365c6-00d6-461c-8536-5d0f13c00102",
       "name": "Nota: ## ✅ PROCESAR PEDI",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        736,
-        2208
+        1136,
+        1616
       ]
     },
     {
@@ -2552,13 +2563,13 @@
         "width": 300,
         "color": 4
       },
-      "id": "853bac32-a6f2-47c6-8e4d-481890a0a181",
+      "id": "ae3c4d48-f79f-45f6-865f-ce1f0d901fa7",
       "name": "Nota: ## 📦 PEDIDOS Y EST",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -48,
-        2752
+        -416,
+        1824
       ]
     },
     {
@@ -2568,13 +2579,13 @@
         "width": 360,
         "color": 2
       },
-      "id": "69243663-4378-4302-8d62-1ec8273a3381",
+      "id": "758a7b54-1e70-443d-8000-dd9fe8f09640",
       "name": "Nota: ## 🛡 RESILIENCIA\n\n",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -800,
-        832
+        -720,
+        1408
       ]
     },
     {
@@ -2584,26 +2595,26 @@
         "width": 400,
         "color": 6
       },
-      "id": "42e9e1dd-db89-4d7c-9427-98f426e36796",
+      "id": "5f91c2b5-87c6-43f2-90da-4889d49d9059",
       "name": "Nota: GestionEstados",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1344,
-        2464
+        1024,
+        2064
       ]
     },
     {
       "parameters": {
-        "jsCode": "\n// === PREPARAR CAMBIO DE ESTADO ===\n// Decodifica el callback del personal de cocina.\n// Convierte el código ASCII del estado al nombre real con tildes/espacios.\nconst norm = $('Normalizar Entrada').first().json;\nconst orderId = norm.arg1;   // ORD-YYYYMMDD-HHmmss\n\nconst estadoMap = {\n  'Preparacion': 'Preparación',\n  'En_camino':   'En camino',\n  'Entregado':   'Entregado',\n  'Cancelado':   'Cancelado'\n};\nconst estadoNombre = estadoMap[norm.arg2] || norm.arg2;\n\nconst emojiMap = {\n  'Preparación': '🔵', 'En camino': '🚀', 'Entregado': '✅', 'Cancelado': '❌'\n};\nconst emoji = emojiMap[estadoNombre] || '📦';\n\nconst mensajeExtra = {\n  'Preparación': '👨‍🍳 Tu pedido está siendo preparado con cariño.',\n  'En camino':   '🏃 ¡Ya va en camino! Prepárate para recibirlo.',\n  'Entregado':   '¡Gracias por tu pedido! Esperamos verte pronto. 🙌',\n  'Cancelado':   'Lamentamos el inconveniente. Escríbenos si tienes dudas.'\n}[estadoNombre] || '';\n\nconst clienteMsg =\n  `${emoji} <b>Actualización de tu pedido</b>\\n\\n` +\n  `🧾 Orden: <code>${orderId}</code>\\n` +\n  `📦 Nuevo estado: <b>${estadoNombre}</b>\\n\\n${mensajeExtra}`;\n\nreturn [{ json: {\n  orderId, estadoNombre, clienteMsg,\n  kitchenChatId: norm.chatId,\n  messageId:     norm.messageId\n}}];\n"
+        "jsCode": "// === PREPARAR CAMBIO DE ESTADO ===\nconst norm = $('Normalizar Entrada').first().json;\nconst orderId = norm.arg1;\nconst estadoRaw = norm.arg2;\n\nconst estadoMap = {\n  'Preparacion': 'Preparación',\n  'En_camino':   'En camino',\n  'Entregado':   'Entregado',\n  'Cancelado':   'Cancelado'\n};\nconst estadoNombre = estadoMap[estadoRaw] || estadoRaw;\n\nconst emojiMap = {\n  'Preparación': '🔵', 'En camino': '🚀', \n  'Entregado': '✅', 'Cancelado': '❌'\n};\nconst emoji = emojiMap[estadoNombre] || '📦';\n\nconst mensajeExtra = {\n  'Preparación': '👨‍🍳 Tu pedido está siendo preparado.',\n  'En camino':   '🏃 ¡Ya va en camino!',\n  'Entregado':   '¡Gracias por tu pedido! 🙌',\n  'Cancelado':   'Lamentamos el inconveniente.'\n}[estadoNombre] || '';\n\nconst clienteMsg =\n  emoji + ' <b>Actualización de tu pedido</b>\\n\\n' +\n  '🧾 Orden: <code>' + orderId + '</code>\\n' +\n  '📦 Nuevo estado: <b>' + estadoNombre + '</b>\\n\\n' + mensajeExtra;\n\nreturn [{ json: {\n  orderId,\n  estadoNombre,\n  clienteMsg,\n  kitchenChatId: norm.chatId,\n  messageId: norm.messageId\n}}];\n"
       },
-      "id": "fb2c8109-78d1-49d2-970f-615f3d1984f4",
+      "id": "063824d3-f9f9-4f79-aeda-b0be1b543802",
       "name": "Preparar Estado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1392,
-        2736
+        -16,
+        1840
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2627,9 +2638,8 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "id_pedido": "={{ $json.orderId }}",
-            "estado": "={{ $json.estadoNombre }}",
-            "row_number": 0
+            "id_pedido": "={{ $('Preparar Estado').first().json.orderId }}",
+            "estado": "={{ $('Preparar Estado').first().json.estadoNombre }}"
           },
           "matchingColumns": [
             "id_pedido"
@@ -2642,7 +2652,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "id_usuario",
@@ -2651,8 +2662,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "detalles_pedido",
@@ -2661,8 +2671,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "total_pago",
@@ -2671,8 +2680,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "estado",
@@ -2690,8 +2698,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "hora",
@@ -2700,8 +2707,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "row_number",
@@ -2712,7 +2718,7 @@
               "type": "number",
               "canBeUsedToMatch": true,
               "readOnly": true,
-              "removed": false
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -2720,13 +2726,13 @@
         },
         "options": {}
       },
-      "id": "d918cf35-32f7-42d0-b5e3-769d4cc556e5",
+      "id": "4acd99e9-177b-4b11-a8de-78318276aead",
       "name": "Actualizar Estado",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        1616,
-        2736
+        208,
+        1840
       ],
       "retryOnFail": true,
       "maxTries": 3,
@@ -2742,7 +2748,7 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs",
+          "value": "1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUX",
           "mode": "id"
         },
         "sheetName": {
@@ -2761,13 +2767,13 @@
         },
         "options": {}
       },
-      "id": "c4ae622a-4993-429e-8129-7290a3542dc4",
+      "id": "fbeea16c-dfdb-47b3-9a38-e830122db0c2",
       "name": "Leer Pedido (cliente)",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        1824,
-        2736
+        432,
+        1840
       ],
       "alwaysOutputData": true,
       "retryOnFail": true,
@@ -2812,18 +2818,18 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "8662e5a4-b32e-4e8e-8334-be3852609574",
+      "id": "36c8dc27-585e-4dc0-9c8c-67c0751e4b44",
       "name": "Avisar Cliente Estado",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2048,
-        2736
+        656,
+        1840
       ],
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 2000,
-      "webhookId": "706cf3cf-c735-4379-96ce-5cabb59b287b",
+      "webhookId": "052c44f1-7b1c-422f-85a3-3a5b20e0d81d",
       "credentials": {
         "telegramApi": {
           "id": "vxUP2zlxfHMW31Bp",
@@ -2840,31 +2846,484 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "26fff7e8-b895-432d-b2f2-37bb0c1caf71",
+      "id": "e2ffd76e-4882-4008-b74f-0fac3b24f048",
       "name": "Confirmar al Personal",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2272,
-        2736
+        880,
+        1840
       ],
       "retryOnFail": true,
       "maxTries": 3,
       "waitBetweenTries": 2000,
-      "webhookId": "d1047173-6d2b-48e8-9de4-a72bc023bdb0",
+      "webhookId": "9510669d-f706-42bd-b506-25f8b9127423",
       "credentials": {
         "telegramApi": {
           "id": "vxUP2zlxfHMW31Bp",
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "## 👮 PANEL DE ADMIN (staff)\n\nAcceso con `/admin` o `/pendientes`.\n\n1. **¿Es Admin?** compara el `userId` contra el ID autorizado → si no, acceso denegado.\n2. **Leer PEDIDOS** trae las ordenes.\n3. **Construir Panel** lista los pendientes y crea un botón 'avanzar' por pedido.\n4. Al tocar un botón → entra a la rama **SETSTATUS** (misma del Trigger) → cambia estado y avisa al cliente.\n\n**Clave:** todo entra por el MISMO Telegram Trigger. La cocina NO es otro bot ni otro workflow.",
+        "height": 320,
+        "width": 420,
+        "color": 3
+      },
+      "id": "fa76c242-7076-4992-9ed5-17f1cecd96e1",
+      "name": "Nota: PanelAdmin",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a27c349c79f4470a93",
+              "leftValue": "={{ $('Normalizar Entrada').first().json.userId }}",
+              "rightValue": "7221482939",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "27860824-341e-4575-bf52-f01a24abb066",
+      "name": "¿Es Admin?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -16,
+        2128
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 924407144,
+          "mode": "list",
+          "cachedResultName": "PEDIDOS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs/edit#gid=924407144"
+        },
+        "options": {}
+      },
+      "id": "211981d9-ce2a-4b25-9dbe-9f128a26c778",
+      "name": "Leer PEDIDOS (panel)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        208,
+        2032
+      ],
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "80TKSvDvZ6ZhUZ0B",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// === PANEL DE COCINA — 1 mensaje por pedido con botones fijos ===\nconst norm = $('Normalizar Entrada').first().json;\nconst filas = $input.all().map(i => i.json).filter(r => r.id_pedido);\n\nconst pendientes = ['Recibido', 'Preparación', 'En camino'];\nconst activos = filas.filter(r => pendientes.includes(r.estado)).slice(-4).reverse();\n\nconst siguiente = { 'Recibido':'Preparacion', 'Preparación':'En_camino', 'En camino':'Entregado' };\nconst etiqueta  = { 'Preparacion':'🔵 En Preparación', 'En_camino':'🚀 En Camino', 'Entregado':'✅ Entregado' };\n\nif (activos.length === 0) {\n  return [{ json: {\n    chatId: norm.chatId,\n    text: '✅ <b>Panel de Cocina</b>\\n\\nNo hay pedidos pendientes. 🎉',\n    btnText: '🔄 Actualizar', btnCallback: 'ADMIN', cancelCallback: 'ADMIN'\n  }}];\n}\n\nreturn activos.map(o => {\n  let items = []; try { items = JSON.parse(o.detalles_pedido || '[]'); } catch(e) {}\n  const resumen = items.map(i => i.cantidad + 'x ' + i.nombre).join(', ') || '—';\n  const next = siguiente[o.estado];\n  return { json: {\n    chatId: norm.chatId,\n    text: '🧾 <b>' + o.id_pedido + '</b>\\n' +\n          '📦 ' + resumen + '\\n' +\n          '💲 $' + Number(o.total_pago).toFixed(2) + ' · Estado: <b>' + o.estado + '</b>',\n    btnText:      next ? etiqueta[next] : '—',\n    btnCallback:  next ? 'SETSTATUS:' + o.id_pedido + ':' + next : 'ADMIN',\n    cancelCallback: 'SETSTATUS:' + o.id_pedido + ':Cancelado'\n  }};\n});\n"
+      },
+      "id": "3c73f313-2100-428f-9595-f716ade258f2",
+      "name": "Construir Panel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        432,
+        2032
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Normalizar Entrada').first().json.chatId }}",
+        "text": "🚫 No tienes permisos de administrador.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "8acd5484-72e4-46af-a2e9-309cad71acf9",
+      "name": "Acceso Denegado",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        2224
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "890e8be2-b529-49f8-9b06-3c8fce54c98f",
+      "credentials": {
+        "telegramApi": {
+          "id": "vxUP2zlxfHMW31Bp",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// === MIS PEDIDOS === (lectura ya filtrada por id_usuario)\nconst norm = $('Normalizar Entrada').first().json;\nlet rows = $input.all().map(i => i.json).filter(r => r.id_pedido);\nif (rows.length === 0) {\n  return [{ json: { text:'📦 Aún no tienes pedidos. ¡Haz el primero con /menu!', chatId: norm.chatId } }];\n}\nrows = rows.slice(-5).reverse();   // ultimos 5\nconst emoji = { 'Recibido':'🟡','Preparación':'🔵','En camino':'🟠','Entregado':'🟢','Cancelado':'🔴' };\nconst lineas = rows.map(r => `${emoji[r.estado]||'•'} <code>${r.id_pedido}</code> — 💲${Number(r.total_pago).toFixed(2)} — <b>${r.estado}</b> (${r.fecha})`).join('\\n');\nreturn [{ json: { text:`📦 <b>Tus últimos pedidos</b>\\n\\n${lineas}`, chatId: norm.chatId } }];\n"
+      },
+      "id": "cce7f0b4-37a3-4a85-8688-682d70db6605",
+      "name": "Construir Mis Pedidos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        1264
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.btnText }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.btnCallback }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "❌ Cancelar",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.cancelCallback }}"
+                    }
+                  },
+                  {
+                    "text": "🔙 Panel",
+                    "additionalFields": {
+                      "callback_data": "ADMIN"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "ee898821-2805-4a23-996d-c44f8f6dfd21",
+      "name": "Enviar Panel",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        656,
+        2032
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "b5969054-3871-4319-bb0e-91908e36e566",
+      "credentials": {
+        "telegramApi": {
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// === VERIFICAR STOCK CRÍTICO ===\n// Busca el nombre del producto en MENU (ya leído antes en este mismo flujo).\n\nconst menu = $('Leer MENU (stock)').all().map(i => i.json);\nconst items = $input.all().map(i => i.json);\n\nreturn items.map(p => {\n  const prod = menu.find(m => String(m.id_producto) === String(p.id_producto));\n  const nombre = prod ? prod.nombre : String(p.id_producto);\n  const stock  = Number(p.stock);\n  return { json: {\n    id_producto: p.id_producto,\n    nombre,\n    stock,\n    esCritico: stock <= 3,   // umbral del requerimiento\n    esAgotado: stock === 0   // para el bonus\n  }};\n});\n"
+      },
+      "id": "5738ab8a-5bd0-42d6-b768-9447df04b4a8",
+      "name": "Verificar Stock Crítico",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4e3485bea9224de697",
+              "leftValue": "={{ $json.esCritico }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8f7ff7e6-5f8a-4a60-9611-a91c16d2358d",
+      "name": "IF ¿Stock Crítico?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1552,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=⚠️ <b>ALERTA DE STOCK CRÍTICO</b>\n\nEl producto <b>{{ $json.nombre }}</b> solo tiene <b>{{ $json.stock }} unidades</b>.\nFavor reabastecer.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "e928e41d-90ca-4fc0-9679-77a4a99e2562",
+      "name": "Avisar Stock Crítico",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1776,
+        1072
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "webhookId": "08b7cd1e-d88c-4294-b4a9-1f221498de52",
+      "credentials": {
+        "telegramApi": {
+          "id": "ucbUu82xHEC6ZRY1",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "565486a0806a4cdeb4",
+              "leftValue": "={{ $json.stock }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1753d958-4265-4626-848a-12df5f702a85",
+      "name": "IF ¿Agotado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2000,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1yYnBwoDvP_MOa6Gc4MkkneqvqRbsLN1soMMRhUXSgMs",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 320642430,
+          "mode": "list",
+          "cachedResultName": "MENU"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_producto": "={{ $json.id_producto }}",
+            "nombre": "=(AGOTADO) {{ $json.nombre }}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "id_producto"
+          ],
+          "schema": [
+            {
+              "id": "id_producto",
+              "displayName": "id_producto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "descripcion",
+              "displayName": "descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "precio",
+              "displayName": "precio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "categoria",
+              "displayName": "categoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stock",
+              "displayName": "stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "disponible",
+              "displayName": "disponible",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "57e91425-676f-4e05-8976-73c9abd03c7c",
+      "name": "Marcar Agotado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2224,
+        1072
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "80TKSvDvZ6ZhUZ0B",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ ALERTA DE STOCK CRÍTICO\n\n**Punto de intervención:** después de `Actualizar Stock`.\n\n**Flujo:**\n1. `Verificar Stock Crítico` → lee el stock nuevo de cada producto y busca su nombre en MENU.\n2. `IF ¿Stock Crítico?` → verdadero si stock ≤ 3.\n3. `Avisar Stock Crítico` → Telegram al admin con nombre y cantidad.\n4. *(Bonus)* `IF ¿Agotado?` → verdadero si stock = 0.\n5. *(Bonus)* `Marcar Agotado` → agrega prefijo *(AGOTADO)* al nombre en MENU.",
+        "height": 300,
+        "width": 420,
+        "color": 2
+      },
+      "id": "4a7d88c8-e7a8-4667-902a-7b5938b3899b",
+      "name": "Nota: AlertaStock",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        1232
+      ]
     }
   ],
   "pinData": {
     "Telegram Trigger": [
       {
         "json": {
-          "update_id": 331427042,
+          "update_id": 694263792,
           "callback_query": {
             "id": "3345916941184228454",
             "from": {
@@ -2921,9 +3380,6 @@
             "chat_instance": "3136863007603212989",
             "data": "CONFIRM"
           }
-        },
-        "pairedItem": {
-          "item": 0
         }
       }
     ]
@@ -3026,6 +3482,13 @@
         [
           {
             "node": "Ayuda",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "¿Es Admin?",
             "type": "main",
             "index": 0
           }
@@ -3227,6 +3690,28 @@
         ]
       ]
     },
+    "Preparar Stock": {
+      "main": [
+        [
+          {
+            "node": "Actualizar Stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar Stock": {
+      "main": [
+        [
+          {
+            "node": "Verificar Stock Crítico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Limpiar Sesión": {
       "main": [
         [
@@ -3249,33 +3734,11 @@
         ]
       ]
     },
-    "Preparar Stock": {
-      "main": [
-        [
-          {
-            "node": "Actualizar Stock",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Leer PEDIDOS (usuario)": {
       "main": [
         [
           {
             "node": "Construir Mis Pedidos",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Construir Mis Pedidos": {
-      "main": [
-        [
-          {
-            "node": "Enviar Mis Pedidos",
             "type": "main",
             "index": 0
           }
@@ -3347,18 +3810,119 @@
           }
         ]
       ]
+    },
+    "¿Es Admin?": {
+      "main": [
+        [
+          {
+            "node": "Leer PEDIDOS (panel)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acceso Denegado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer PEDIDOS (panel)": {
+      "main": [
+        [
+          {
+            "node": "Construir Panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Panel": {
+      "main": [
+        [
+          {
+            "node": "Enviar Panel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir Mis Pedidos": {
+      "main": [
+        [
+          {
+            "node": "Enviar Mis Pedidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Stock Crítico": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Stock Crítico?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Stock Crítico?": {
+      "main": [
+        [
+          {
+            "node": "Avisar Stock Crítico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar Stock Crítico": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Agotado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Agotado?": {
+      "main": [
+        [
+          {
+            "node": "Marcar Agotado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar Cocina": {
+      "main": [
+        []
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
-  "versionId": "855cbd23-62d5-4ff1-a49b-8080d4d4cedd",
+  "versionId": "136e12cc-028d-4d99-9531-da393235a4bd",
   "meta": {
     "instanceId": "f2cbc7b311faf67c172186fc0dcc09c78e86a43804e99dfa56f6fd04c01041eb"
   },
   "nodeGroups": [],
-  "id": "My1GF0nICQ53YBUF",
+  "id": "MpUCe7FQEwrGfd0F",
   "tags": []
 }
